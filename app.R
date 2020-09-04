@@ -2,14 +2,13 @@ library(shiny)
 library(tidyverse)
 library(DT)
 library(plotly)
-setwd("~/fantasyfootball/yearly")
+#setwd("~/fantasyfootball/yearly")
 
 # Load in and modify data
 "All_years.csv" %>%
   read_csv() %>% 
   arrange(desc(Year)) %>%
   filter(FantasyPoints >= 50.0) %>%
-  
   select(Player, Year, Tm, Pos, G, PassAtt, PassYards, RushAtt, RushYards, Rec, RecYards, FantasyPoints) %>%
   filter(Pos != "0") %>%
   mutate(TotalYds = RushYards + RecYards + PassYards,
@@ -29,7 +28,6 @@ ui <- shinyUI(fluidPage(
         selectInput("year","Choose a Year", choices = data$Year),
         selectInput("position", "Choose a Position", choices = data$Pos)
       ),
-      
       mainPanel(
         plotlyOutput("playerplot"),
         DT::dataTableOutput("mytable")
