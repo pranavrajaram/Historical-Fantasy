@@ -1,13 +1,15 @@
 library(shiny)
 library(tidyverse)
 library(DT)
-#setwd("~/fantasyfootball/yearly")
+library(plotly)
+setwd("~/fantasyfootball/yearly")
 
 # Load in and modify data
 "All_years.csv" %>%
   read_csv() %>% 
-  arrange(Year) %>%
+  arrange(desc(Year)) %>%
   filter(FantasyPoints >= 50.0) %>%
+  
   select(Player, Year, Tm, Pos, G, PassAtt, PassYards, RushAtt, RushYards, Rec, RecYards, FantasyPoints) %>%
   filter(Pos != "0") %>%
   mutate(TotalYds = RushYards + RecYards + PassYards,
@@ -16,7 +18,8 @@ library(DT)
 # Make UI for app
 ui <- shinyUI(fluidPage(
   h1("Historical Fantasy Football Graphs"),
-  h5("Select a year, and see the fantasy football leaders from then!"),
+  h5("Select a year, and see the fantasy football leaders from then! - All data is in a PPR Scoring format."),
+  h5("You can hover over the graph to see individual player stats, and zoom in/out of the graph. Double click to exit"),
   p("Made by Pranav Rajaram. All data was taken from", 
     a("here.",
       href = "https://github.com/fantasydatapros/data", target="blank")),
@@ -28,7 +31,7 @@ ui <- shinyUI(fluidPage(
       ),
       
       mainPanel(
-        plotOutput("playerplot"),
+        plotlyOutput("playerplot"),
         DT::dataTableOutput("mytable")
       )
     )
@@ -52,25 +55,26 @@ server <- function(input, output) {
   })
   
   # Plot
-  output$playerplot <- renderPlot({
-    ggplot(data = data) +
+  output$playerplot <- renderPlotly({
+    g <- ggplot(data = data) +
       geom_point(data = selectedData(),
                  aes(x = TotalTouches,
                      y = FantasyPoints)) +
       geom_text(alpha = 0.7,
-                size = 3.5,
+                size = 2.75,
                 data = selectedData(),
                 aes(x = TotalTouches, 
                     y = FantasyPoints,
                     label = Player),
-                nudge_y = 4) +
+                nudge_y = 5) +
       labs(title = "Fantasy Football Historical Plots",
            subtitle = "PPR Scoring",
            x = "Total Touches(Pass Attempts + Receptions + Carries)",
-           y = "Fantasy Points") +
-      theme(legend.position = "bottom")
+           y = "Fantasy Points")
+    ggplotly(g, hoverinfo = "text")
   })
   
+  # Display table
   output$mytable = DT::renderDataTable({
     selectedData()
   })
