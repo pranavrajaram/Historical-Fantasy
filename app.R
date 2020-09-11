@@ -69,7 +69,7 @@ server <- function(input, output) {
            subtitle = "PPR Scoring",
            x = "Total Touches(Pass Attempts + Receptions + Carries)",
            y = "Fantasy Points")
-    ggplotly(g, hoverinfo = "text")
+    ggplotly(g, hoverinfo = selectedData())
   })
   
   # Display table
