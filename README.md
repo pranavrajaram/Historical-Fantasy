@@ -1,5 +1,5 @@
 # Historical-Fantasy
-View fantasy football leaders from 1970-2019.
+View fantasy football leaders from 1970-2020.
 
 https://goprani04.shinyapps.io/Historical-Fantasy/
 
